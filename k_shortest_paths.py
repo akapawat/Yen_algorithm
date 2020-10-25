@@ -132,7 +132,8 @@ def k_shortest_paths(G, source, target, K=1, weight='weight', all_kshortest = Fa
         else:
             break
     if all_kshortest:
-        return ((all_length[i],A[i]) for i in range(len(A)))
+        return (all_length, A)
+    
     return (all_length[-1], A[-1])
 
 def get_path_length(G, path, weight='weight'):
@@ -159,3 +160,4 @@ def get_path_length(G, path, weight='weight'):
 # G.add_edge('G', 'H',length = 2)
 
 # print(k_shortest_paths(G, 'C', 'H', 3, "length",False)) 
+
