@@ -60,19 +60,18 @@ def k_shortest_paths(G, source, target, K=1, weight='weight', all_kshortest = Fa
     A = []
     all_length = []
     
-    short_length, short_path = nx.single_source_dijkstra(G, source, target, weight=weight)
+    B_length, B = nx.single_source_dijkstra(G, source, target, weight=weight)
     
     if K ==1:
-        return short_length, short_path
-    A.append(short_path)
-    all_length.append(short_length)
+        return B_length, B
+    A.append(B)
+    all_length.append(B_length)
     
     if target not in A[0]:
         raise nx.NetworkXNoPath("node %s not reachable from %s" % (source, target))
         
     for k in range(1, K):
-        B = []
-        B_length = 0
+
         for i in range(len(A[-1]) - 1):
             spur_node = A[-1][i]
             root_path = A[-1][:i + 1]
@@ -111,15 +110,14 @@ def k_shortest_paths(G, source, target, K=1, weight='weight', all_kshortest = Fa
                 total_path_length = root_path_length + spur_path_length         
             else:
                 total_path_length = i + spur_path_length
-                
-            if total_path_length > short_length:
+            if total_path_length > all_length[-1]:
                 if B:
                     if total_path_length < B_length:
                         B = total_path
                         B_length = total_path_length
-                else:
-                    B = total_path
-                    B_length = total_path_length
+                    else:
+                        B = total_path
+                        B_length = total_path_length
                     
             for w in range(len(edges_removed)):
                 u = edges_removed[w][0]
@@ -127,13 +125,14 @@ def k_shortest_paths(G, source, target, K=1, weight='weight', all_kshortest = Fa
                 G.add_edge(u,v)
                 if  weight:
                     G.edges[u,v][weight]=edge_attr[w]
+        
         if B:
             A.append(B)
             all_length.append(B_length)
         else:
             break
     if all_kshortest:
-        return [(all_length[i],A[i]) for i in range(len(A))]
+        return ((all_length[i],A[i]) for i in range(len(A)))
     return (all_length[-1], A[-1])
 
 def get_path_length(G, path, weight='weight'):
@@ -148,15 +147,15 @@ def get_path_length(G, path, weight='weight'):
     
     return length    
     
-G = nx.DiGraph()
-G.add_edge('C', 'D',length = 3)
-G.add_edge('C', 'E',length = 2)
-G.add_edge('D', 'F',length = 4)
-G.add_edge('E', 'D',length = 1)
-G.add_edge('E', 'F',length = 2)
-G.add_edge('E', 'G',length = 3)
-G.add_edge('F', 'G',length = 2)
-G.add_edge('F', 'H',length = 1)
-G.add_edge('G', 'H',length = 2)
+# G = nx.DiGraph()
+# G.add_edge('C', 'D',length = 3)
+# G.add_edge('C', 'E',length = 2)
+# G.add_edge('D', 'F',length = 4)
+# G.add_edge('E', 'D',length = 1)
+# G.add_edge('E', 'F',length = 2)
+# G.add_edge('E', 'G',length = 3)
+# G.add_edge('F', 'G',length = 2)
+# G.add_edge('F', 'H',length = 1)
+# G.add_edge('G', 'H',length = 2)
 
-print(k_shortest_paths(G, 'C', 'H', 3, "length",False)) 
+# print(k_shortest_paths(G, 'C', 'H', 3, "length",False)) 
